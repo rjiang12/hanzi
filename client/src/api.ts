@@ -4,6 +4,7 @@ export interface Deck {
   total: number;
   new_count: number;
   due_count: number;
+  ratings: { again: number; hard: number; good: number; easy: number } | null;
 }
 
 export interface Card {

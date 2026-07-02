@@ -60,6 +60,10 @@ nav.topnav a.active {
 
 .deck-row .counts .due { color: #ff8a65; }
 .deck-row .counts .new { color: #64b5f6; }
+.deck-row .counts .rating-count-again { color: #e57373; }
+.deck-row .counts .rating-count-hard { color: #d3a05a; }
+.deck-row .counts .rating-count-good { color: #6fbf8b; }
+.deck-row .counts .rating-count-easy { color: #6fa8dc; }
 
 button {
   font: inherit;

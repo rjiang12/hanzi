@@ -29,6 +29,14 @@ export default function Dashboard() {
               <span className="due">{deck.due_count} due</span>
               <span className="new">{deck.new_count} new</span>
               <span>{deck.total} total</span>
+              {deck.ratings && (
+                <>
+                  <span className="rating-count-again">{deck.ratings.again} again</span>
+                  <span className="rating-count-hard">{deck.ratings.hard} hard</span>
+                  <span className="rating-count-good">{deck.ratings.good} good</span>
+                  <span className="rating-count-easy">{deck.ratings.easy} easy</span>
+                </>
+              )}
             </div>
           </div>
           <button className="primary" disabled={deck.total === 0} onClick={() => navigate(`/review/${deck.id}`)}>
