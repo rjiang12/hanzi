@@ -6,6 +6,15 @@ export const reviewRouter = Router();
 
 const NEW_CARDS_PER_SESSION = 20;
 
+function shuffle<T>(items: T[]): T[] {
+  const arr = items.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 reviewRouter.get('/queue', (req, res) => {
   const deckId = req.query.deckId ? Number(req.query.deckId) : undefined;
   const now = new Date().toISOString();
@@ -53,7 +62,19 @@ reviewRouter.get('/queue', (req, res) => {
     aheadOfSchedule = ahead.length > 0;
   }
 
-  res.json({ due, new: newCards, aheadOfSchedule, queue: [...due, ...newCards, ...ahead] });
+  // Cards come back in query order (due date / insertion order, which tracks the
+  // seed data's alphabetical-by-pinyin ordering) - shuffle within each group so study
+  // order isn't predictable, while still reviewing due cards before new ones.
+  const shuffledDue = shuffle(due);
+  const shuffledNew = shuffle(newCards);
+  const shuffledAhead = shuffle(ahead);
+
+  res.json({
+    due: shuffledDue,
+    new: shuffledNew,
+    aheadOfSchedule,
+    queue: [...shuffledDue, ...shuffledNew, ...shuffledAhead],
+  });
 });
 
 reviewRouter.post('/:cardId', (req, res) => {
