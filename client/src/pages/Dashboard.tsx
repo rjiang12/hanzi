@@ -31,11 +31,7 @@ export default function Dashboard() {
               <span>{deck.total} total</span>
             </div>
           </div>
-          <button
-            className="primary"
-            disabled={deck.due_count === 0 && deck.new_count === 0}
-            onClick={() => navigate(`/review/${deck.id}`)}
-          >
+          <button className="primary" disabled={deck.total === 0} onClick={() => navigate(`/review/${deck.id}`)}>
             Study
           </button>
         </div>

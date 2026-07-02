@@ -34,7 +34,26 @@ reviewRouter.get('/queue', (req, res) => {
     )
     .all(deckId ? { deckId, limit: NEW_CARDS_PER_SESSION } : { limit: NEW_CARDS_PER_SESSION });
 
-  res.json({ due, new: newCards, queue: [...due, ...newCards] });
+  // Nothing due or new left (e.g. a fully-learned deck) - let the deck still be studied
+  // ahead of schedule instead of locking it out until the next due date rolls around.
+  let aheadOfSchedule = false;
+  let ahead: unknown[] = [];
+  if (due.length === 0 && newCards.length === 0) {
+    ahead = db
+      .prepare(
+        `
+      SELECT c.*, rs.due, rs.state FROM cards c
+      JOIN review_state rs ON rs.card_id = c.id
+      WHERE rs.state != 0 ${deckFilter}
+      ORDER BY rs.due ASC
+      LIMIT @limit
+    `,
+      )
+      .all(deckId ? { deckId, limit: NEW_CARDS_PER_SESSION } : { limit: NEW_CARDS_PER_SESSION });
+    aheadOfSchedule = ahead.length > 0;
+  }
+
+  res.json({ due, new: newCards, aheadOfSchedule, queue: [...due, ...newCards, ...ahead] });
 });
 
 reviewRouter.post('/:cardId', (req, res) => {

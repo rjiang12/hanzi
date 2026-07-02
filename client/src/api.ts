@@ -19,6 +19,7 @@ export interface Card {
 export interface QueueResponse {
   due: Card[];
   new: Card[];
+  aheadOfSchedule: boolean;
   queue: Card[];
 }
 

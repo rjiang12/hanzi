@@ -16,10 +16,12 @@ export default function Review() {
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [exhaustedEmpty, setExhaustedEmpty] = useState(false);
+  const [aheadOfSchedule, setAheadOfSchedule] = useState(false);
 
   const loadQueue = useCallback(() => {
     return api.getQueue(deckId ? Number(deckId) : undefined).then((res) => {
       setExhaustedEmpty(res.queue.length === 0);
+      setAheadOfSchedule(res.aheadOfSchedule);
       setQueue(res.queue);
       setIndex(0);
       setRevealed(false);
@@ -77,6 +79,7 @@ export default function Review() {
 
   return (
     <div className="review-card">
+      {aheadOfSchedule && <div className="ahead-banner">Studying ahead of schedule</div>}
       <div className="hanzi">{current.hanzi}</div>
       <div className="reveal">
         {revealed ? (
