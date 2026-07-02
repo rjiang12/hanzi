@@ -15,10 +15,20 @@ export default function Review() {
   const [queue, setQueue] = useState<Card[] | null>(null);
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const [exhaustedEmpty, setExhaustedEmpty] = useState(false);
+
+  const loadQueue = useCallback(() => {
+    return api.getQueue(deckId ? Number(deckId) : undefined).then((res) => {
+      setExhaustedEmpty(res.queue.length === 0);
+      setQueue(res.queue);
+      setIndex(0);
+      setRevealed(false);
+    });
+  }, [deckId]);
 
   useEffect(() => {
-    api.getQueue(deckId ? Number(deckId) : undefined).then((res) => setQueue(res.queue));
-  }, [deckId]);
+    loadQueue();
+  }, [loadQueue]);
 
   const current = queue?.[index];
 
@@ -56,8 +66,11 @@ export default function Review() {
   if (!current) {
     return (
       <div className="empty-state">
-        <p>All done for now.</p>
-        <button onClick={() => navigate('/')}>Back to dashboard</button>
+        <p>{exhaustedEmpty ? 'Nothing more due right now.' : 'All done for now.'}</p>
+        <div className="rating-row">
+          {!exhaustedEmpty && <button className="primary" onClick={loadQueue}>Continue</button>}
+          <button onClick={() => navigate('/')}>Back to dashboard</button>
+        </div>
       </div>
     );
   }
